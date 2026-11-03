@@ -90,11 +90,12 @@ class Yui:
         nom = request.args.get("n", "").strip() or request.args.get("q", "").strip()
         saison = request.args.get("s", "").strip() # saison1 par défaut
         version = request.args.get("v", "").strip() # version sera en vostfr par défaut
+        episode = request.args.get("e", "").strip() or request.args.get("ep", "").strip() # numéro de l'épisode
 
         if not nom:
             return jsonify({"error": "Paramètre 'n' manquant"}), 400
         
-        return jsonify(Cardinal.getAnimeLink(nom, saison, version))
+        return jsonify(Cardinal.getAnimeLink(nom, saison, version, episode))
 
     @app.route('/api/getScanLink', methods=["GET"])
     def getScanLink():
