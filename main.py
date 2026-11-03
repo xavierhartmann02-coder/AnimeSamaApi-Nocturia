@@ -1,3 +1,5 @@
+import os
+
 try:
     from .src.api import *
     from .src.utils.config import Config, Utils
@@ -8,19 +10,16 @@ except ImportError:
 class Api:
     
     @staticmethod
-    def launch(port=5000, ip="127.0.0.1", debug_state: bool = True, reload_status: bool = True):
+    def launch(port=None, ip=None, debug_state: bool = False, reload_status: bool = False):
         """
         Lance l'application Yui avec les paramètres spécifiés.
-
-        Args:
-            port (int): Port sur lequel l'application sera accessible. Default 5000.
-            ip (str): Adresse IP d'écoute. Default "127.0.0.1".
-            debug_state (bool): Active le mode debug. Default True.
-            reload_status (bool): Active le reloader automatique. Default True.
         """
-
         Utils.hashCheck()
         Utils.gitCheck()
+
+        # Récupération automatique du port et de l'IP (priorité aux variables d'environnement de Render)
+        port = int(os.environ.get("PORT", port if port else 5000))
+        ip = os.environ.get("HOST", ip if ip else "0.0.0.0")
 
         Config.IP = ip
         Config.PORT = port
@@ -30,7 +29,11 @@ class Api:
             port=port,
             debug=debug_state, 
             use_reloader=reload_status
-            )
+        )
 
 if __name__ == "__main__":
-    Api.launch()
+    # En production sur Render, on désactive par défaut le debug et le reloader
+    Api.launch(
+        debug_state=os.environ.get("DEBUG", "False").lower() == "true",
+        reload_status=False
+    )
