@@ -1,4 +1,5 @@
 import os
+from flask_cors import CORS
 
 try:
     from .src.api import *
@@ -20,6 +21,9 @@ class Api:
 
         Config.IP = ip
         Config.PORT = port
+
+        # Activation du CORS sur l'application Flask
+        CORS(Yui.app)
 
         # Utilisation de l'instance Flask importée
         Yui.app.run(
