@@ -2,31 +2,37 @@ import os
 from flask_cors import CORS
 
 try:
-    from .src.api import *
+    from .src.api import app
     from .src.utils.config import Config, Utils
 except ImportError:
-    from src.api import *
+    from src.api import app
     from src.utils.config import Config, Utils
 
 class Api:
     
     @staticmethod
     def launch(port=None, ip=None, debug_state: bool = False, reload_status: bool = False):
-        Utils.hashCheck()
-        Utils.gitCheck()
+        try:
+            Utils.hashCheck()
+            Utils.gitCheck()
+        except Exception:
+            pass
 
         # Récupération dynamique du port fourni par Render
         port = int(os.environ.get("PORT", port if port else 5000))
         ip = os.environ.get("HOST", ip if ip else "0.0.0.0")
 
-        Config.IP = ip
-        Config.PORT = port
+        try:
+            Config.IP = ip
+            Config.PORT = port
+        except Exception:
+            pass
 
         # Activation du CORS sur l'application Flask
-        CORS(Yui.app)
+        CORS(app)
 
         # Utilisation de l'instance Flask importée
-        Yui.app.run(
+        app.run(
             host=ip,
             port=port,
             debug=debug_state, 
